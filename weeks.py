@@ -90,4 +90,8 @@ if __name__ == '__main__':
 
     table = (make_timetable())
 
-    print(type(table))
+    print(table)
+
+    for i in table:
+        for j in table[i]:
+            print(f'Дата: {i},Время: {j}')
