@@ -1,14 +1,15 @@
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from config import TOKEN, ENGINE, DBASE_NAME
-from model import engine
+from config import TOKEN, DBASE_NAME
+from model import engine, make_table, show_table
+
 
 import os
 import keyboards as kb
 from aiogram.dispatcher.filters import Text
 import logging
-from model import create_db, fill_week, Session, get_week, set_appointment
+from model import create_db, fill_week, Session, set_appointment
 
 
 bot = Bot(token=TOKEN)
@@ -21,7 +22,11 @@ engine.connect()
 
 @dp.message_handler(commands=['start'])
 async def process_start_command(message: types.Message):
-    await bot.send_message(message.from_user.id, f'Привет {message.from_user.first_name}')
+    await bot.send_message(message.from_user.id, f'Привет {message.from_user.first_name}!\n'
+                                                 f'Я могу записать тебя на прием к знаменитому'
+                                                 f' психологу, Курту Кобейну.'
+                                                 f'Он поможет тебе справиться с депрессией.\n'
+                                                 f'Введи команду:/menu чтобы продолжить! ')
 
 
 @dp.message_handler(commands='menu')
@@ -37,12 +42,23 @@ async def main_nemu(call: types.CallbackQuery):
         await call.message.answer('Выберите день:', reply_markup=kb.make_week_kb(True))
 
 
+@dp.callback_query_handler(Text(startswith='table'))
+async def main_nemu(call: types.CallbackQuery):
+    if 'week1' in call.data:
+        await call.message.answer(show_table())
+    else:
+        await call.message.answer(show_table(True))
+
+
 @dp.callback_query_handler(Text(startswith='show'))
 async def main_nemu(call: types.CallbackQuery):
     #  Проверка существования записи в БД
     fill_week(Session())
     fill_week(Session(), True)
-    await call.message.answer('Выберите неделю:', reply_markup=kb.main_menu)
+    if 'free' in call.data:
+        await call.message.answer('Выберите неделю:', reply_markup=kb.main_menu)
+    else:
+        await call.message.answer('Выберите неделю:', reply_markup=kb.main_menu_show)
 
 
 @dp.callback_query_handler(Text(startswith='lesson'))
@@ -59,21 +75,18 @@ async def main_nemu(call: types.CallbackQuery):
 async def main_nemu(call: types.CallbackQuery):
     if '0' in call.data:
         #  Код получает название кнопки, вернувшей данный колбек
-        data = call.data
-        for j in call.message.reply_markup.inline_keyboard:
-            for i in j:
-                if i['callback_data'] == data:
-                    print(i['text'])
-        # await call.message.reply('Выберите удобное время:', reply_markup=kb.make_week_kb())
+        # data = call.data
+        # for j in call.message.reply_markup.inline_keyboard:
+        #     for i in j:
+        #         if i['callback_data'] == data:
+        #              print(i['text'])
+        await call.message.reply('Выберите удобное время:', reply_markup=kb.main_menu)
     else:
         data = call.data
         for j in call.message.reply_markup.inline_keyboard:
             for i in j:
                 if i['callback_data'] == data:
                     await call.message.reply('Выберите время:', reply_markup=kb.make_day(i['text']))
-
-
-
 
 
 if __name__ == '__main__':

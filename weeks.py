@@ -1,10 +1,10 @@
 import calendar
 from datetime import datetime, timedelta
-
-curr_date = datetime.now()
-y = curr_date.year
-m = curr_date.month
-d = curr_date.day
+#
+# curr_date = datetime.now()
+# y = curr_date.year
+# m = curr_date.month
+# d = curr_date.day
 
 
 def find_week(next_week=False) -> tuple:
@@ -40,12 +40,6 @@ def find_week(next_week=False) -> tuple:
     return res_week
 
 
-
-
 if __name__ == '__main__':
 
-    ex = find_week()[0]
-
-    print(ex[0])
-    dates = [n[0][5:] for n in ex]
-    print(dates)
+    pass

@@ -7,10 +7,16 @@ from datetime import datetime
 
 
 """ ----------------- Main menu ----------------------------"""
+
 btn_week1 = InlineKeyboardButton('Эта неделя', callback_data='week1')
 btn_week2 = InlineKeyboardButton('Следующая неделя', callback_data='week2')
 main_menu = InlineKeyboardMarkup().add(btn_week1, btn_week2)
 
+"""--------------------Main menu show----------------------------------"""
+
+btn_show_week1 = InlineKeyboardButton('Эта неделя', callback_data='table_week1')
+btn_show_week2 = InlineKeyboardButton('Следующая неделя', callback_data='table_week2')
+main_menu_show = InlineKeyboardMarkup().add(btn_show_week1, btn_show_week2)
 
 """-----------------sum Main menu---------------------------------"""
 
@@ -93,8 +99,6 @@ def make_day(date: str) -> InlineKeyboardMarkup:
 
 def show_free_time():
     pass
-
-
 
 
 if __name__ == '__main__':
